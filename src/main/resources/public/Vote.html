@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>投票系统</title>
+		<link rel="stylesheet" type="text/css" href="css/vote.css" />
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/config.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="App">
+			<div>
+				<div class="nav">
+					<div class="left">
+						<div class="log">
+							<img src="img/logo.png" />
+						</div>
+					</div>
+					<div>
+						<div class="nav-item border-line" style="color: orchid;">系统配置</div>
+						<div class="nav-item border-line" @click="skip()">成绩看板</div>	
+					</div>
+					<div class="exit">系统 v 2.11</div>
+				</div>
+			</div>
+			
+			<div class="equipment">
+				<div class="equipment-box">
+					<div class="title">
+						设备发放 <span style="color: red; font-size: 20px;"> {{derror}}</span>
+					</div>
+					<div class="con-box">
+						<div class="con-box-item">设备数量：<input name="sum" v-model="device.sum"/></div>
+						<div class="con-box-item">发放数量：<input name="offer" v-model="device.offer" /></div>
+						<div class="con-box-item">
+							<button @click="getDevice">恢复设置</button>
+							<button @click="saveDevice">保存设置</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="player">
+					<div class="title">选手信息登记 <span style="color: red; font-size: 20px;"> {{error}}</span></div>
+					<div class="compete">
+						<div class="compete-line">
+							<div class="player-title" style="color: red;">红队</div>
+							<div class="session-title">PK</div>
+							<div class="player-title" style="color: blue;">蓝队</div>
+						</div>
+						
+						<template v-for="(item, index) in athleteInfo" v-if="index%2==0">
+							<div class="compete-line">
+								<div class="player-input"><input name="redName1" v-model="athleteInfo[index].name" /></div>
+								<div class="sessionNum">第{{number[(index < 2) ? 0:parseInt(index/2)]}}场</div>
+								<div class="player-input"><input name="blueName1" v-model="athleteInfo[index + 1].name" /></div>
+							</div>
+						</template>
+					</div>
+					<div class="compete-button">
+						<button @click="getAthleteInfo">重新加载</button>
+						<button @click="saveAthleteInfo">保存信息</button>
+					</div>
+				</div>
+				<div class="other">
+					<div class="other-title">其它设置 <span style="color: red; font-size: 20px;"> {{terror}}</span></div>
+					<div class="other-box">
+						<button @click="iniedata">初始化投票数据</button>
+						<div class="setTime">
+							投票时间：
+							<input name="time" v-model="time" />
+							秒
+							<button @click="setTime()">设置</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#App',
+				data: {
+					device:{},
+					athleteInfo:[],
+					number: ['一', '二', '三', '四', '五', '六', '七', '八'],
+					time:0,
+					derror:'',
+					terror:'',
+					error:''
+				},
+				mounted() {
+					this.getDevice();
+					this.getAthleteInfo();
+					this.time = localStorage.getItem("setTime")||0;
+				},
+				watch: {
+				},
+				methods: {
+					iniedata(){
+						this.athleteInfo =
+						[
+						  { "id": 1, "team": "红队", "ronda": "1", "name": "" },
+						  { "id": 2, "team": "蓝队", "ronda": "1", "name": "" },
+						  { "id": 3, "team": "红队", "ronda": "2", "name": "" },
+						  { "id": 4, "team": "蓝队", "ronda": "2", "name": "" },
+						  { "id": 5, "team": "红队", "ronda": "3", "name": "" },
+						  { "id": 6, "team": "蓝队", "ronda": "3", "name": "" },
+						  { "id": 7, "team": "红队", "ronda": "4", "name": "" },
+						  { "id": 8, "team": "蓝队", "ronda": "4", "name": "" }
+						];
+						this.saveAthleteInfo();
+					},
+					//获取选手信息
+					getAthleteInfo(){
+						$.post( serverUrl + "/voter/AthleteInfoConnector/getAthleteInfo",
+							{},
+							(data)=>{
+								this.athleteInfo = data;
+							})
+					},
+					//保存选手信息
+					saveAthleteInfo(){
+						  $.ajax({
+						        type: "POST",
+						        url:  serverUrl + "/voter/AthleteInfoConnector/editAthleteInfoServiceS",
+						        contentType: "application/json; charset=utf-8",
+						        data: JSON.stringify(this.athleteInfo),
+						        dataType: "json",
+						        success: (message)=> {
+						            if (message > 0) {
+										this.getAthleteInfo();
+										alert("设置成功！");
+										this.error = " 设置成功！";
+						            }
+						        },
+						        error: function (message) {
+						           this.error = " 设置失败！";
+						        }
+						    });
+					},
+					// 获取设备配置信息
+					getDevice(){
+						$.post( serverUrl + "/voter/DeviceInfoConnector/getDefaultDeviceInfoS",
+							{},
+							(data)=>{
+								console.log(data);
+								this.device = data;
+							})
+					},
+					//保存配置信息
+					saveDevice(){
+						$.post( serverUrl + "/voter/DeviceInfoConnector/editDefaultDeviceInfo",
+							this.device,
+							(data)=>{
+								console.log(data);
+								this.getDevice();
+								alert(" 设置成功！");
+								this.derror = " 设置成功！"
+							})
+					},
+					setTime(){
+						this.time = isNaN(this.time)?0:this.time;
+						localStorage.setItem("setTime", this.time);
+						alert("设置投票计时")
+						this.terror = " 设置成功！"
+					},
+					skip(url){
+						window.location.href = 'DashBoard.html'
+					}
+				}
+			})
+		</script>
+	
+	</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="UTF-8">
+	<head>
+		<meta charset="utf-8">
+		<title>选手系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" type="text/css" href="css/lanRenZhiJia.css" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/config.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/showMode.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/httpServer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vConsole.js" type="text/javascript" charset="utf-8"></script>
+		<!-- <script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script> -->
+	</head>
+	<style>
+		@font-face {
+			font-family: HYYaKuHeiW;
+			src: url('css/fonts/HYYaKuHeiW.ttf'); /* IE9+ */
+		}
+		*{
+			-webkit-touch-callout:none; /*系统默认菜单被禁用*/
+			-webkit-user-select:none; /*webkit浏览器*/
+			-khtml-user-select:none; /*早期浏览器*/
+			-moz-user-select:none;/*火狐*/
+			-ms-user-select:none; /*IE10*/
+			user-select:none;
+		}
+		body{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			margin: 0;
+			width: 100%;
+			height: 100%;
+		}
+		#page{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			font-family: HYYaKuHeiW,serif;
+		}
+		.bg{
+			position:fixed;
+			top: 0;
+			left: 0;
+			background: url(img/ipad_bg.png) no-repeat center 0;
+			background-size: 100% 100%;
+			-o-background-size:  100% 100%;
+			-webkit-background-size:  100% 100%;
+		}
+		.show-box{
+			color: #FFFFFF;
+		}
+		.showLine{
+			display: flex;
+		}
+		.score{/* 
+			text-decoration:underline */
+			text-align: center;
+			border-bottom: 2px solid #FFFFFF;
+		}
+		input{
+			cursor: pointer;
+		}
+	</style>
+	<body>
+		<div id="page">
+			<div class="bg" :style="bgStyle">
+				<div class="show-box" :style="showStyle">
+					<label for="numberInput"></label>
+					<input id="numberInput" type="number" v-model="score" pattern="[0-9]*" style="height: 0;width: 0;-webkit-user-select:text !important;" />
+					<div class="showLine" :style="showLine2">
+						<div :style="labStyle">自觉估分：</div>
+						<div :style="inputStyle" class="score" @touchstart="input($event)">{{score}}</div>
+					</div>
+					<div class="showLine" :style="showLine" id="show_button_box">
+						<div :style="labStyle3" style="border: 0;">
+							<input class="a_demo_one" type="image" style="border: 0; outline:none; -webkit-appearance: none;-webkit-tap-highlight-color: rgba(0,0,0,0);"
+							:style="buttonStyle" :src="submitFlag?'img/ipad_button.png':'img/chenggong.png'"
+							@touchstart="submit($event)" alt="提交估分"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.oncontextmenu = function() { return false; }//禁止鼠标右键
+			document.ondragstart = function() {  return false; }//禁止鼠标拖动
+			document.onselectstart = function() {  return false; }//文字禁止鼠标选中
+			document.onselect = function() { return false; }//禁止复制文本
+			document.body.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });//阻止默认的处理方式(阻止下拉滑动的效果)
+			let page = new Vue({
+				el: '#page',
+				data: {
+					bgStyle: {
+						width: '1px',
+						height: '1px',
+					},
+					showStyle: {},
+					showLine: {},
+					showLine2: {},
+					titleImgBox: {},
+					titleImg: {},
+					labStyle: {},
+					labStyle3: {},
+					inputStyle: {},
+					buttonStyle: {},
+					submitFlag: true,
+					deviation: 1,
+					countScore: 400,
+					score: '',
+					name: '',
+					timer: null
+				},
+				mounted() {
+					// let vConsole = new VConsole();
+					this.initFrom();
+					this.timer = setInterval(this.synchronizationServer, 1000);
+				},
+				watch: {
+					"score": function (valueNew, valueOld) {
+						console.log("新的参数：", valueNew, valueOld);
+						if (undefined === valueNew || valueNew == null || valueNew === '') {
+							this.score = ' ';
+							console.log("用户输入为空");
+							return;
+						}
+						if (!(/(^[0-9]\d*$)/.test(valueNew))) {
+							this.score = ' ';
+							console.log("用户输入不为正整数");
+							return;
+						}
+						if (parseInt(valueNew) > 0) {
+							this.score = parseInt(valueNew);
+						}
+						if (parseInt(valueNew) > this.countScore) {
+							this.score = this.countScore;
+							console.log("用户输入超过", this.countScore);
+						}
+					}
+				},
+				methods: {
+					synchronizationServer: function () {
+						let that = this;
+						httpServer.post(
+								clientUrl + '/voter/SelfEvaluationConnector/getSelfEvaluationName',
+								{},
+								function (data) {
+									let name = data.msg || '等待投票授权';
+									if (data.ret === 200) {
+										if (data.data == 1) {
+											if (that.name !== name) {
+												that.score = '';
+											}
+											that.name = name;
+											that.submitFlag = true;
+											$("#show_button_box").fadeIn(500);
+										} else {
+											that.name = name;
+											$("#show_button_box").fadeOut(1000);
+										}
+									}
+								},
+								function (e) {
+									console.log("synchronizationServer同步数据错误：", e)
+								}
+						);
+					},
+					input(e) {
+						this.submitFlag = true;
+						document.getElementById('numberInput').focus();
+						e.preventDefault();
+					},
+					submit(e) {
+						let that = this;
+						if(that.subFlag)return;
+						that.subFlag = true;
+						if ((!this.score) || this.score == ' ') {
+							$("#show_button_box").shake(2, 10, 400);
+							that.subFlag = false;
+							return;
+						}
+						that.submitFlag = true;
+						httpServer.post(
+								clientUrl + "/voter/SelfEvaluationConnector/submitSelfEvaluation",
+								{
+									score: this.score,
+									playerName: this.name
+								},
+								function (data) {
+									that.subFlag = false;
+									if (data.ret == 200) {
+										that.submitFlag = false;
+										$("#show_button_box").fadeOut(1000);
+									}else {
+										console.error(data);
+									}
+								},
+								function (data){
+									that.subFlag = false;
+									alert("提交失败，请把分数和设备交给后台人员处理，谢谢！")
+								}
+						)
+						e.preventDefault();
+					},
+					initFrom() {
+						let initWidth = 1612; //1563 1612
+						let initHeight = 1178; //1178
+
+						let width = document.documentElement.clientWidth;
+						let height = document.documentElement.clientHeight;
+						this.deviation = width / initWidth;
+						// 1563 1178
+						let b = width / height;
+						let c = initWidth / initHeight;
+						if (b > c) {
+							// 按高度计算
+							this.deviation = height / initHeight;
+						} else {
+							// 按宽度计算
+							this.deviation = width / initWidth;
+						}
+						this.initBg(initWidth, initHeight);
+						this.initShowStyle();
+						this.initTitleImgBox();
+						this.initLabStyle();
+						this.initButtonStyle();
+						this.initShowLine();
+					},
+					initBg(width, height) {
+						this.bgStyle = {
+							width: (width * this.deviation) + 'px',
+							height: (height * this.deviation) + 'px',
+						}
+					},
+					initShowStyle(width, height) {
+						this.showStyle = {
+							width: (1245 * this.deviation) + 'px',
+							height: (450 * this.deviation) + 'px',
+							'margin-left': (320 * this.deviation) + 'px',
+							'margin-top': (500 * this.deviation) + 'px',
+							'font-size': (50 * this.deviation) + 'px',
+							'line-height': (50 * this.deviation) + 'px'
+						}
+					},
+					initShowLine(width, height) {
+						this.showLine = {
+							// width: (width * this.deviation) + 'px',
+							// height: (450 * this.deviation) + 'px',
+							'margin-bottom': (185 * this.deviation) + 'px',
+							'font-size': (50 * this.deviation) + 'px',
+							'line-height': (50 * this.deviation) + 'px'
+						}
+						this.showLine2 = {
+							// width: (width * this.deviation) + 'px',
+							// height: (450 * this.deviation) + 'px',
+							'margin-top': (20 * this.deviation) + 'px',
+							'margin-bottom': (125 * this.deviation) + 'px',
+							'font-size': (120 * this.deviation) + 'px',
+							'line-height': (80 * this.deviation) + 'px'
+						}
+					},
+					initTitleImgBox() {
+						this.titleImgBox = {
+							width: (56 * this.deviation) + 'px',
+							height: (34 * this.deviation) + 'px',
+						}
+						this.titleImg = {
+							width: (56 * this.deviation) + 'px',
+							height: (34 * this.deviation) + 'px',
+						}
+					},
+					initLabStyle() {
+						this.labStyle = {
+							'margin-left': (45 * this.deviation) + 'px',
+						}
+						this.labStyle3 = {
+							'margin-left': (290 * this.deviation) + 'px',
+						}
+						this.inputStyle = {
+							width: (268 * this.deviation) + 'px',
+							height: (100 * this.deviation) + 'px',
+							'margin-left': (25 * this.deviation) + 'px',
+							'margin-right': (8 * this.deviation) + 'px',
+							'font-size': (120 * this.deviation) + 'px',
+						}
+					},
+					initButtonStyle() {
+						this.buttonStyle = {
+							width: (507 * this.deviation) + 'px',
+							height: (176 * this.deviation) + 'px',
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

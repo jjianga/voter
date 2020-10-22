@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="UTF-8">
+	<head>
+		<meta charset="utf-8">
+		<title>投票系统</title>
+		<link rel="stylesheet" type="text/css" href="css/DashBoard.css" />
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/showMode.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/config.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/httpServer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/html2canvas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jsPdf.debug.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<style>
+		.winLeft{
+			background-image: url(img/wangguan.png);
+			background-size: auto 100%;
+			background-repeat: no-repeat;
+			background-position: right;
+		}
+		.winRigth{
+			background-image: url(img/wangguan.png);
+			background-size: auto 100%;
+			background-repeat: no-repeat;
+		}
+		button[disabled] {
+		  color: white !important;
+		  background: #E6E6E6 !important;
+		}
+	</style>
+	<body>
+		<div id="App">
+			<div>
+				<div class="nav">
+					<div class="left">
+						<div class="log">
+							<img src="img/logo.png"  alt="打歌LOGO"/>
+						</div>
+					</div>
+					<div>
+						<div class="nav-item border-line" @click="skip()">系统配置</div>
+						<div class="nav-item border-line" style="color: orchid;">成绩看板</div>
+					</div>
+
+					<div class="exit">系统 v 2.11</div>
+				</div>
+			</div>
+
+			<div class="equipment">
+				<div class="equipment-box">
+					<div class="title">
+						当前进度 <span style="font-size: 15px; color: red;">{{error}}</span>
+					</div>
+					<div class="con-box">
+						<div class="con-box-item">系统当前状态：
+							<span style="font-size: 18px; color: red;font-weight: 600;">
+								{{stateToString(state)}} {{timeNum==-1?'':timeNum}}
+							</span>
+						</div>
+						<div class="con-box-item">当前投票队伍：
+							<span style="font-weight: 600;" :style="'color:' + (athlete.team == '蓝队'?'blue':(athlete.team == '红队'?'red':'#000'))">
+								{{athlete.team?athlete.team:'--'}}
+							</span>
+						</div>
+						<div class="con-box-item">当前投票选手：
+							<span style="font-weight: 600;" :style="'color:' + (athlete.team == '蓝队'?'blue':(athlete.team == '红队'?'red':'#000'))">
+								{{athlete.name?athlete.name:'--'}}
+							</span>
+						</div>
+					</div>
+					<div class="buttons">
+						<button :disabled="state != 0 && state != 2" @click="startSelfEvaluation">选手自评</button>
+						<button :disabled="state != 1" @click="stopSelfEvaluation">自评结束</button>
+						<button :disabled="state != 0 && state != 2" @click="startVote">观众投票</button>
+						<button :disabled="state != 0 && state != 2" @click="startVoteTime" style="width: 160px;">观众投票-计时({{time}})</button>
+						<button :disabled="state != 3 && state != 4" @click="stopVote">结束投票</button>
+						<!--						<button :disabled="state != 3 && state != 4 && state != 5 && state != 6 && state != 7" @click="resetVote">重置投票</button>-->
+<!--						<button @click="toPdf">导出看板</button>-->
+						结算延时：<input v-model="initTimeS" type="nuber" style="width: 20px;"/>
+					</div>
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="player">
+					<div class="title">选手比赛</div>
+					<div class="compete">
+						<div class="compete-line">
+							<div class="player-title red">红队</div>
+							<div class="session-title">PK</div>
+							<div class="player-title blue">蓝队</div>
+						</div>
+						<template v-for="(item, index) in athleteInfo" v-if="index%2==0">
+							<div class="compete-line">
+								<div class="player-button red">
+									<button type="button" @click="selectPlayer(athleteInfo[index])">选手上台</button>
+								</div>
+								<div class="player-abs-score">差异分：{{athleteInfo[index].score != null?athleteInfo[index].score:'--'}}</div>
+								<div class="player-score">
+									<div class="score-line" style="cursor:pointer;" @dblclick="editAthleteValue(athleteInfo[index])">
+										自评分：{{athleteInfo[index].athleteValue != null?athleteInfo[index].athleteValue:'--'}}
+									</div>
+									<div class="score-line" style="cursor:pointer;" @dblclick="editAudienceValue(athleteInfo[index])">
+										观众投票：{{athleteInfo[index].audienceValue != null?athleteInfo[index].audienceValue:'--'}}
+									</div>
+								</div>
+								<div class="player-name red" :style="athlete.name==athleteInfo[index].name?'transform: scale(1.1);':''">
+									{{athleteInfo[index].name}}
+								</div>
+								<div :class="'sessionNum ' + (athleteInfo[index + 1].v == 2?' winLeft':' ') +( athleteInfo[index].v == 2?' winRigth':' ')">
+									第{{number[index < 2 ? 0:parseInt(index/2)]}}场
+								</div>
+								<div class="player-name blue" :style="athlete.name==athleteInfo[index+1].name?'transform: scale(1.1);':''">
+									{{athleteInfo[index + 1].name}}
+								</div>
+								<div class="player-score">
+									<div class="score-line" style="cursor:pointer;" @dblclick="editAthleteValue(athleteInfo[index + 1])">
+										自评分：{{athleteInfo[index + 1].athleteValue != null?athleteInfo[index + 1].athleteValue:'--'}}
+									</div>
+									<div class="score-line" style="cursor:pointer;" @dblclick="editAudienceValue(athleteInfo[index + 1])">
+										观众投票：{{athleteInfo[index + 1].audienceValue != null?athleteInfo[index + 1].audienceValue:'--'}}
+									</div>
+								</div>
+								<div class="player-abs-score">差异分：{{athleteInfo[index + 1].score != null?athleteInfo[index + 1].score:'--'}}</div>
+								<div class="player-button">
+									<button type="button blue" @click="selectPlayer(athleteInfo[index + 1])">选手上台</button>
+								</div>
+							</div>
+							<hr style="width: 80%; border: rgba(1,1,1,0.1) 1px solid;" />
+						</template>
+
+						<div class="compete-line">
+							<div class="player-button"></div>
+							<div class="player-abs-score" style="font-weight: 600; color: red">差异分：{{red.score}}</div>
+							<div class="score-line" style="font-weight: 600; color: red">观众投票：{{red.audienceValue}}</div>
+							<div class="score-line" style="font-weight: 600; color: red">自评分：{{red.athleteValue}}</div>
+							<div class="sessionNum" style="">
+								总&nbsp;&nbsp;分
+							</div>
+							<div class="score-line" style="font-weight: 600; color: red">自评分：{{blue.athleteValue}}</div>
+							<div class="score-line" style="font-weight: 600; color: red">观众投票：{{blue.audienceValue}}</div>
+							<div class="player-abs-score" style="font-weight: 600; color: red">差异分：{{blue.score}}</div>
+							<div class="player-button"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#App',
+				data: {
+					device: {},	 //设备基础配置
+					athlete: {},	//上台中的选手信息
+					athleteInfo: [],	//选手信息列表
+					red:{	//红队总分
+						score:0,		
+						athleteValue:0,
+						audienceValue:0,
+					},
+					blue:{	//蓝队总分
+						score:0,
+						athleteValue:0,
+						audienceValue:0,
+					},
+					number: ['一', '二', '三', '四', '五', '六', '七', '八'],
+					time: 0, 		//倒计时的时间 在配置页修改
+					timeNum: -1,	//倒计时，计时信息
+					settleNum: 0, 	//结算计数器
+					initTimeS:10,	//计数器 多少秒没有数据更新开始结算
+					error: '',	//设备的错误消息
+					state: 0, 			// 0 默认状态， 1，自评状态 
+					stateString: '',	//状态提示消息
+				},
+				watch: {
+					"state": (newValue, valueOld) => {
+						console.log("状态码更新：", newValue);
+						localStorage.setItem("state", newValue)
+					},
+					"athlete": (newValue, valueOld) => {
+						console.log("选手更新：", newValue);
+						localStorage.setItem("playerName", newValue.name);
+					},
+					"initTimeS":(newValue, valueOld)=>{
+						console.log("结算延时更新：", newValue);
+						localStorage.setItem("initTimeS", newValue);
+					}
+				},
+				mounted() {
+					//设置投票倒计时设置
+					this.time = localStorage.getItem("setTime") || 0;
+					//设置 投票最后一次状态，以及选手名字
+					this.state = parseInt(localStorage.getItem("state") || '0');
+					this.initTimeS = parseInt(localStorage.getItem("initTimeS") || '0');
+					let playerName = localStorage.getItem("playerName");
+					console.log("初始化playerName：", playerName);
+					//刷新服务端数据
+					this.getDevice();
+					this.getAthleteInfo(playerName);
+					//启动计时器
+					this.timer = setInterval(this.synchronizationServer, 1000);
+
+				},
+				methods: {
+					stateToString(state) {
+						switch (state) {
+							case 0:
+								return '选手上台'; //允许选中选手进入自评投票环节
+							case 1:
+								return '选手自评'; //允许选手给自己打分， 后台可以结束自评状态，结束之后选手不能给自己评分
+							case 2:
+								return '自评结束'; //自评结束，此时看板上自评分会更新
+							case 3:
+								return '启动投票'; //通知投票器设备，发起投票
+							case 4:
+								return '正在投票'; //投票器已经响应，进入投票状态
+							case 5:
+								return '停止投票'; //发起通知，投票器结束投票
+							case 6:
+								return '结算票数'; //延迟x(s) 结算最终的分
+							case 7:
+								return '投票结束'; //展示得分显示在看板上
+						}
+					},
+					synchronizationServer() {
+						//自动停止投票倒计时
+						if (this.timeNum > -1) {
+							if (this.timeNum == 0) {
+								this.stopVote()
+							}
+							this.timeNum--;
+						};
+						// 选手自评阶段，不断刷新服务器得分，当服务器响应,刷新选手数据
+						if (this.state == 1) {
+							$.post(serverUrl + "/voter/SelfEvaluationConnector/getScoreSelfEvaluation", {
+									playerName: this.athlete.name
+								},
+								(data) => {
+									if (data.ret == 200 && data.data != -1) {
+										this.stopSelfEvaluation(() => {
+											this.athlete.athleteValue = data.data;
+											this.updateScore(() => {
+												this.state = 2;
+											});
+										});
+									}	
+								});
+						}
+						// 投票阶段数据显示刷新
+						if (this.state == 3 || this.state == 4 || this.state == 5) {
+							$.post(serverUrl + "/voter/VoteInfoConnector/synchronizationVote", {
+									playerName: this.athlete.name
+								},
+								(data) => {
+									console.log('选手投票服务端响应：', data);
+									if (data.ret == 200 && data.data != -1) {
+										switch (data.data) {
+											case 1: //预备投票  服务器通知了设备，还没有响应
+												this.state = 3;
+												console.log("预备投票")
+												break;
+											case 2: // 投票中
+												this.state = 4;
+												console.log("投票中")
+												break;
+											case 3: // 预备结束
+												this.state = 5;
+												console.log("预备结束")
+												break;
+											case 4: // 投票结束
+												this.state = 6;
+												this.settleNum = this.initTimeS; //10秒刷新一次
+												this.athlete.audienceValue = ''; //清空观众票数
+												this.timeNum = -1; //重置倒计时
+												console.log("投票结束")
+												break;
+											default:
+												this.state = 0;
+												console.log("---------")
+										}
+									}
+								});
+						}
+						// 结算时间  如果 #settleNum（s）数据没有刷新，则结算投票数据
+						if (this.state == 6) {
+							if (this.settleNum == -1||this.settleNum == this.initTimeS){
+								$.post(serverUrl + "/voter/VoteInfoConnector/getScore",
+									{
+										playerName: this.athlete.name
+									},
+									(data) => {
+										console.log(data);
+										if (data.ret != 500) {
+											if (this.athlete.audienceValue === data.data) {
+												var nod = this.device.sum - this.device.offer;
+												this.athlete.audienceValue = this.athlete.audienceValue + nod;
+												this.updateScore(() => {
+													this.state = 7;
+												});
+											}else{ //数据有变化 重新计时
+												this.settleNum = this.initTimeS -1;
+											}
+											this.athlete.audienceValue = data.data;
+										}
+									});
+							}
+							this.settleNum--;
+						}
+						// 投票结束
+						if (this.state == 7) {
+							this.state = 0;
+						}
+						// 查询连接设备
+						$.post(serverUrl + "/voter/VoteInfoConnector/getVoteDevice", {},
+							(data) => {
+								console.log(this.state,data,"-------------------------------------------------”")
+								if (data.ret == 200) {
+									this.voteState = 0;
+									this.error = data.msg + data.data;
+								} else if (data.ret == 201) { //投票器断开连接，提示错误
+									this.voteState = 1;
+									this.error = data.msg;
+								} else {// 投票过程中异常
+									if(data.data == 1){
+										if(this.state == 3 || this.state == 4){	//预备投票中 或者 投票中
+											this.state = 0;
+											this.timeNum = -1; //重置倒计时
+										}
+									}else{
+										this.state = 4;
+									}
+									this.voteState = 2;
+									this.error = data.msg;
+								}
+							});
+					},
+					updateScore(su) {
+						// 自评分和玩家打分都有值，结算差异分
+						if (this.athlete.athleteValue != null && this.athlete.audienceValue != null) {
+							this.athlete.score = Math.abs(this.athlete.athleteValue - this.athlete.audienceValue);
+						}
+						console.log("自评分：", this.athlete.athleteValue, '观众票数：', this.athlete.audienceValue, '差异分：', this.athlete.score);
+						this.saveAthleteInfoS(() => {
+							if ("function" == typeof(su)) su();
+							this.getAthleteInfo(this.athlete.name);
+						});
+					},
+					startVote() {
+						// 启动投票
+						if (this.voteState == 1) {
+							alert("没有设备连接，检查设备状态！")
+							return;
+						}
+						//开始投票
+						$.post(serverUrl + "/voter/VoteInfoConnector/startVote", {
+								playerName: this.athlete.name
+							},
+							(data) => {
+								console.log(data);
+								if (data.ret != 500) {
+									// 通知服务端了 不代表真的开始了 
+									this.state = 3;
+									this.timeNum = -1;
+								}
+							});
+					},
+					startVoteTime() {
+						if (this.voteState == 1) {
+							alert("没有设备连接，检查设备状态！");
+							return;
+						}
+						//开始投票
+						$.post(serverUrl + "/voter/VoteInfoConnector/startVote", {
+								playerName: this.athlete.name
+							},
+							(data) => {
+								console.log(data);
+								if (data.ret != 500) {
+									// 通知服务开始收集选票，不一定已经开始了
+									this.state = 3;
+									this.timeNum = this.time; //预先设置一个时间
+								}
+							});
+					},
+					stopVote(su) {
+						//开始投票
+						$.post(serverUrl + "/voter/VoteInfoConnector/stopVote", {
+								playerName: this.athlete.name
+							},
+							(data) => {
+								console.log(data);
+								if (data.ret != 500) {
+									if ("function" == typeof(su)){
+										 su();
+									} else{
+										this.state = 5;
+									}
+								}
+							});
+					},
+					resetVote() { //重置状态
+						if(this.state == 1){
+							this.stopSelfEvaluation(()=>{
+								this.timeNum = -1; //重置倒计时
+								this.state = 0;
+							})
+						}
+						if(this.state == 3 || this.state == 4){
+							this.stopVote(()=>{
+								this.timeNum = -1; //重置倒计时
+								this.state = 0;
+							});
+						}
+					},
+					/**
+					 * 自评启动
+					 */
+					startSelfEvaluation() {
+						// 设置自评分状态，不允许切换选手，通知服务器 接收ipad发送的消息
+						var lState = this.state;
+						this.state = 1;
+						$.post(serverUrl + "/voter/SelfEvaluationConnector/startSelfEvaluation", {
+								playerName: this.athlete.name
+							},
+							(data) => {
+								console.log("自评启动:", data);
+								if (data.ret == 500) { //错误回滚
+									this.state = lState;
+								}
+							});
+					},
+					stopSelfEvaluation(su) {
+						//自评结束 
+						$.post(serverUrl + "/voter/SelfEvaluationConnector/stopSelfEvaluation", {
+								playerName: this.athlete.name
+							},
+							(data) => {
+								console.log("自评结束:", data);
+								if (data.ret != 500) {
+									this.state = 0;
+									if ("function" == typeof(su)) su();
+								}
+							});
+					},
+					openMode(text) {
+						$(".buttons").Xprompt({
+							promptText: text,
+							promptBtn: "确认"
+						});
+					},
+					selectPlayer(athlete) {
+						if (this.state == 0 || this.state == 2) {
+							this.athlete = athlete;
+						} else if (this.state == 1) {
+							console.log(this.state)
+							this.openMode("选手自评中！");
+						} else {
+							this.openMode("当前不允许选择选手！");
+						}
+					},
+					getAthleteInfo(playerName) {
+						$.post(serverUrl + "/voter/AthleteInfoConnector/getAthleteInfo", {},
+							(data) => {
+								console.log(data);
+								this.athleteInfo = data;
+								this.athlete = this.athleteInfo[0];
+								
+								this.red={ score:0, athleteValue:0, audienceValue:0 };
+								this.blue={ score:0, athleteValue:0, audienceValue:0 };
+								for (var index in this.athleteInfo) {
+									index = parseInt(index)
+									var ai = this.athleteInfo[index];
+									if (ai.name == playerName) {
+										this.athlete = ai;
+									}
+
+									//判断比拼
+									if (index % 2 == 0) {
+										if (this.athleteInfo[index].score != null && this.athleteInfo[index + 1].score != null) {
+											if (this.athleteInfo[index].score != this.athleteInfo[index + 1].score) {
+												if (this.athleteInfo[index].score < this.athleteInfo[index + 1].score) {
+													this.athleteInfo[index].v = 2;
+												} else {
+													this.athleteInfo[index + 1].v = 2;
+												}
+											} else {
+												//打平了
+												this.athleteInfo[index].v = 1;
+												this.athleteInfo[index + 1].v = 1;
+											}
+										} else {
+											//还没表演完
+										}
+										if(index == 0 || index== 1)continue;
+										if(!isNaN(this.athleteInfo[index].athleteValue)){
+											this.red.athleteValue += this.athleteInfo[index].athleteValue;
+										}
+										if(!isNaN(this.athleteInfo[index].audienceValue)){
+											this.red.audienceValue += this.athleteInfo[index].audienceValue;
+										}
+										if(!isNaN(this.athleteInfo[index].score)){
+											this.red.score += this.athleteInfo[index].score;
+										}
+									}else{
+										if(index == 0 || index== 1)continue;
+										if(!isNaN(this.athleteInfo[index].athleteValue)){
+											this.blue.athleteValue += this.athleteInfo[index].athleteValue;
+										}
+										if(!isNaN(this.athleteInfo[index].audienceValue)){
+											this.blue.audienceValue += this.athleteInfo[index].audienceValue;
+										}
+										if(!isNaN(this.athleteInfo[index].score)){
+											this.blue.score += this.athleteInfo[index].score;
+										}
+									}
+
+								}
+								console.log(this.red, this.blue)
+							})
+					},
+					saveAthleteInfoS(su) {
+						httpServer.postJson(
+							serverUrl + "/voter/AthleteInfoConnector/editAthleteInfoS",
+							JSON.stringify(this.athleteInfo),
+							(message) => {
+								if (message > 0) {
+									console.log(message);
+									if ("function" == typeof(su)) su();
+								}
+							},
+							function(message) {
+								$("#request-process-patent").html("提交数据失败！");
+							})
+					},
+					editAthleteValue(athlete) {
+						let value=prompt("请输入" + athlete.name + "的自评分！");
+						if(value != null){
+							httpServer.post(
+									serverUrl + "/voter/AthleteInfoConnector/editAthleteValue",
+									{
+										id:athlete.id,
+										athleteValue:parseInt(value)
+									},
+									(message) => {
+										console.log(message);
+										this.getAthleteInfo(this.athlete.name);
+									},
+									function(message) {
+										$("#request-process-patent").html("提交数据失败！");
+									})
+						}
+					},
+					editAudienceValue(athlete) {
+						let value=prompt("请输入" + athlete.name + "的最新票数！");
+						if(value != null) {
+							httpServer.post(
+									serverUrl + "/voter/AthleteInfoConnector/editAudienceValue",
+									{
+										id: athlete.id,
+										audienceValue: parseInt(value)
+									},
+									(message) => {
+										console.log(message);
+										this.getAthleteInfo(this.athlete.name);
+									},
+									function (message) {
+										$("#request-process-patent").html("提交数据失败！");
+									})
+						}
+					},
+					getDevice() {
+						$.post(serverUrl + "/voter/DeviceInfoConnector/getDefaultDeviceInfoS", {},
+							(data) => {
+								console.log(data);
+								this.device = data;
+							})
+					},
+					skip(url) {
+						window.location.href = 'Vote.html'
+					},
+					toPdf() {
+						// this.convert2canvas();
+					},
+					convert2canvas(e) {
+						var shareContent = document.getElementById("App"); // 需要绘制的部分的 (原生）dom 对象 ，注意容器的宽度不要使用百分比，使用固定宽度，避免缩放问题
+						var width = shareContent.offsetWidth; // 获取(原生）dom 宽度
+						var height = shareContent.offsetHeight; // 获取(原生）dom 高
+						var offsetTop = shareContent.offsetTop; //元素距离顶部的偏移量
+
+						var canvas = document.createElement("canvas"); //创建canvas 对象
+						var context = canvas.getContext("2d");
+						var scaleBy = this.getPixelRatio(context); //获取像素密度的方法 (也可以采用自定义缩放比例)
+						canvas.width = width * scaleBy; //这里 由于绘制的dom 为固定宽度，居中，所以没有偏移
+						canvas.height = (height + offsetTop) * scaleBy; // 注意高度问题，由于顶部有个距离所以要加上顶部的距离，解决图像高度偏移问题
+						context.scale(scaleBy, scaleBy);
+
+						var opts = {
+							allowTaint: true, //允许加载跨域的图片
+							tainttest: true, //检测每张图片都已经加载完成
+							scale: scaleBy, // 添加的scale 参数
+							canvas: canvas, //自定义 canvas
+							logging: true, //日志开关，发布的时候记得改成false
+							width: width, //dom 原始宽度
+							height: height //dom 原始高度
+						};
+						html2canvas(shareContent, opts).then(function(canvas) {
+							var body = document.getElementsByTagName("body");
+							body[0].appendChild(canvas);
+							
+							// var pageData = canvas.toDataURL('image/jpeg', 1.0);
+							
+							// //方向默认竖直，尺寸ponits，格式a4【595.28,841.89]
+							// var pdf = new jsPDF('', 'pt', 'a4');
+							// //需要dataUrl格式
+							// pdf.addImage(pageData, 'JPEG', 0, 0, 595.28, 592.28 / canvas.width * canvas.height);
+							// pdf.save('content.pdf');
+						});
+					},
+					//获取像素密度
+					getPixelRatio: function(context) {
+						var backingStore =
+							context.backingStorePixelRatio ||
+							context.webkitBackingStorePixelRatio ||
+							context.mozBackingStorePixelRatio ||
+							context.msBackingStorePixelRatio ||
+							context.oBackingStorePixelRatio ||
+							context.backingStorePixelRatio ||
+							1;
+						return (window.devicePixelRatio || 1) / backingStore;
+					},
+				}
+			})
+		</script>
+	</body>
+</html>
