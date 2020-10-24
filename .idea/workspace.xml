@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bd442418-3bf2-4c1b-ab3b-7434855968bd" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="F:\git\voter\.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="userSettingsFile" value="E:\maven\setting.xml" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+        <option name="jdkForImporter" value="1.8" />
+        <option name="vmOptionsForImporter" value="-Xmx768m" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="jreName" value="1.8" />
+  </component>
+  <component name="ProjectId" id="1jGSiTwwCetM0PjFtH7PJpDIZcV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/public" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="reactor" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\git\voter\src\main\resources\public" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="VoterApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="voter" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.jjianga.VoterApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bd442418-3bf2-4c1b-ab3b-7434855968bd" name="Default Changelist" comment="" />
+      <created>1603429063008</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1603429063008</updated>
+      <workItem from="1603429065651" duration="438000" />
+      <workItem from="1603503805325" duration="2085000" />
+      <workItem from="1603542314804" duration="1488000" />
+    </task>
+    <task id="LOCAL-00001" summary="增加大屏特效版">
+      <created>1603504622017</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1603504622017</updated>
+    </task>
+    <task id="LOCAL-00002" summary="清除配置">
+      <created>1603542353416</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1603542353416</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="增加大屏特效版" />
+    <MESSAGE value="清除配置" />
+    <option name="LAST_COMMIT_MESSAGE" value="清除配置" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="451" y="118" key="CommitChangelistDialog2" timestamp="1603544268238">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="451" y="118" key="CommitChangelistDialog2/0.0.1920.1050@0.0.1920.1050" timestamp="1603544268238" />
+    <state x="86" y="85" key="DiffContextDialog" timestamp="1603544259231">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="86" y="85" key="DiffContextDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1603544259231" />
+    <state x="740" y="279" key="FileChooserDialogImpl" timestamp="1603429330012">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="740" y="279" key="FileChooserDialogImpl/0.0.1920.1050@0.0.1920.1050" timestamp="1603429330012" />
+    <state width="1877" height="351" key="GridCell.Tab.0.bottom" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.0.center" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.0.left" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.0.right" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.1.bottom" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.1.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.1.center" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.1.center/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.1.left" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.1.left/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.1.right" timestamp="1603524509477">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.1.right/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509477" />
+    <state width="1877" height="351" key="GridCell.Tab.2.bottom" timestamp="1603524509478">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.2.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509478" />
+    <state width="1877" height="351" key="GridCell.Tab.2.center" timestamp="1603524509478">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.2.center/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509478" />
+    <state width="1877" height="351" key="GridCell.Tab.2.left" timestamp="1603524509478">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.2.left/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509478" />
+    <state width="1877" height="351" key="GridCell.Tab.2.right" timestamp="1603524509478">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="351" key="GridCell.Tab.2.right/0.0.1920.1050@0.0.1920.1050" timestamp="1603524509478" />
+    <state x="461" y="166" key="SettingsEditor" timestamp="1603429508831">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="461" y="166" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1603429508831" />
+    <state x="552" y="257" key="Vcs.Push.Dialog.v2" timestamp="1603544185140">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="552" y="257" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1603544185140" />
+    <state x="640" y="348" key="com.intellij.ide.util.TipDialog" timestamp="1603503805591">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="640" y="348" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1603503805591" />
+    <state x="688" y="315" key="git4idea.merge.GitPullDialog" timestamp="1603543860107">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="688" y="315" key="git4idea.merge.GitPullDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1603543860107" />
+  </component>
+</project>
