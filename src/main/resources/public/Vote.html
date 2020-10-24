@@ -6,6 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="css/vote.css" />
 		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/httpServer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/config.js" type="text/javascript" charset="utf-8"></script>
 	</head>
 	<body>
@@ -28,7 +29,7 @@
 			<div class="equipment">
 				<div class="equipment-box">
 					<div class="title">
-						设备发放 <span style="color: red; font-size: 20px;"> {{derror}}</span>
+						设备发放 <span style="color: red; font-size: 20px;"> {{dError}}</span>
 					</div>
 					<div class="con-box">
 						<div class="con-box-item">设备数量：<input name="sum" v-model="device.sum"/></div>
@@ -66,7 +67,8 @@
 				<div class="other">
 					<div class="other-title">其它设置 <span style="color: red; font-size: 20px;"> {{terror}}</span></div>
 					<div class="other-box">
-						<button @click="iniedata">初始化投票数据</button>
+						<button @click="initData">初始化选手数据</button>
+						<button @click="initVoterData">初始化投票数据</button>
 						<div class="setTime">
 							投票时间：
 							<input name="time" v-model="time" />
@@ -85,7 +87,7 @@
 					athleteInfo:[],
 					number: ['一', '二', '三', '四', '五', '六', '七', '八'],
 					time:0,
-					derror:'',
+					dError:'',
 					terror:'',
 					error:''
 				},
@@ -97,19 +99,40 @@
 				watch: {
 				},
 				methods: {
-					iniedata(){
-						this.athleteInfo =
-						[
-						  { "id": 1, "team": "红队", "ronda": "1", "name": "" },
-						  { "id": 2, "team": "蓝队", "ronda": "1", "name": "" },
-						  { "id": 3, "team": "红队", "ronda": "2", "name": "" },
-						  { "id": 4, "team": "蓝队", "ronda": "2", "name": "" },
-						  { "id": 5, "team": "红队", "ronda": "3", "name": "" },
-						  { "id": 6, "team": "蓝队", "ronda": "3", "name": "" },
-						  { "id": 7, "team": "红队", "ronda": "4", "name": "" },
-						  { "id": 8, "team": "蓝队", "ronda": "4", "name": "" }
-						];
-						this.saveAthleteInfo();
+					initData(){
+						let flag = confirm("确定初始化所有数据，数据将会全部清除！")
+						if(flag){
+							this.athleteInfo =
+									[
+										{ "id": 1, "team": "红队", "ronda": "1", "name": "" },
+										{ "id": 2, "team": "蓝队", "ronda": "1", "name": "" },
+										{ "id": 3, "team": "红队", "ronda": "2", "name": "" },
+										{ "id": 4, "team": "蓝队", "ronda": "2", "name": "" },
+										{ "id": 5, "team": "红队", "ronda": "3", "name": "" },
+										{ "id": 6, "team": "蓝队", "ronda": "3", "name": "" },
+										{ "id": 7, "team": "红队", "ronda": "4", "name": "" },
+										{ "id": 8, "team": "蓝队", "ronda": "4", "name": "" }
+									];
+							this.saveAthleteInfo();
+						}
+					},
+					initVoterData(){
+						let flag = confirm("确定删除所有投票数据，数据将会全部清除，且无法恢复！")
+						if(flag){
+							httpServer.post(
+								serverUrl + "/voter/VoteInfoConnector/deleteVoterInfo",
+								{},
+								(data)=>{
+									if(data.ret == 200){
+										alert("投票数据清除成功！");
+									}else{
+										alert("投票数据清除失败！");
+									}
+								},
+								(err)=>{
+									alert("网络错误，投票数据清除失败！");
+								});
+						}
 					},
 					//获取选手信息
 					getAthleteInfo(){
@@ -123,7 +146,7 @@
 					saveAthleteInfo(){
 						  $.ajax({
 						        type: "POST",
-						        url:  serverUrl + "/voter/AthleteInfoConnector/editAthleteInfoServiceS",
+						        url:  serverUrl + "/voter/AthleteInfoConnector/editAthleteInfoS",
 						        contentType: "application/json; charset=utf-8",
 						        data: JSON.stringify(this.athleteInfo),
 						        dataType: "json",
@@ -156,7 +179,7 @@
 								console.log(data);
 								this.getDevice();
 								alert(" 设置成功！");
-								this.derror = " 设置成功！"
+								this.dError = " 设置成功！"
 							})
 					},
 					setTime(){

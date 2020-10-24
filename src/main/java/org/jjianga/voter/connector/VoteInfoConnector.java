@@ -119,4 +119,10 @@ public class VoteInfoConnector {
         }
         return new BaseResultModel<>(200, "当前连接投票设备：", SocketGroup.channelGroup.size());
     }
+
+    @PostMapping(value = "deleteVoterInfo")
+    @ApiOperation(value="删除数据库投票信息，无法恢复！", notes="删除数据库投票信息，无法恢复！")
+    public BaseResultModel<Integer> deleteVoterInfo(){
+        return new BaseResultModel<>(200, "删除数据库投票信息，无法恢复！", this.voteInfoService.deleteVoterInfo());
+    }
 }

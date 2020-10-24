@@ -16,6 +16,8 @@ public interface VoteInfoService {
     int getScore(Integer playerNo);
     // 屏蔽旧数据
     int maskingOldData();
-    // 逻辑删除错误数据
+    // 逻辑删除数据
     int deleteVoteInfo();
+    // 物理删除所有数据
+    int deleteVoterInfo();
 }

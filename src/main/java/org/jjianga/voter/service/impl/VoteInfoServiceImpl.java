@@ -39,4 +39,9 @@ public class VoteInfoServiceImpl implements VoteInfoService {
         return voteInfoMapper.deleteVoteInfo();
     }
 
+    @Override
+    public int deleteVoterInfo() {
+        return voteInfoMapper.deleteByExample(null);
+    }
+
 }
