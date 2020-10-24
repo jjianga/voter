@@ -1,0 +1,60 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>宇宙打歌中心</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href='static/css/base.css' rel='stylesheet' type='text/css'>
+    <link href='static/css/index.css' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <div class="layer_main">
+        <b>最终成绩上板：</b>
+        <a target="_blank" href="totals.html">确认上板</a>
+    </div>
+    <div class="layer_main">
+        <b>单场成绩上板：</b>
+        <select id="cc">
+            <option value="1">第一场PK</option>
+            <option value="2">第二场PK</option>
+            <option value="3">第三场PK</option>
+            <option value="4">第四场PK</option>
+        </select>
+        <select id="sxs">
+            <option value="hong">红队先上场</option>
+            <option value="lan">蓝队先上场</option>
+        </select>
+        <a href="javascript:openOnce();">确认上板</a>
+    </div>
+
+    <div class="layer_main">
+        <b> 投票数据来源：</b>
+        <input id="serviceUrl" type="text" ></input>
+        <button onclick="saveServiceUrl()" > 设置地址</button>
+    </div>
+    <div class="layer_main">
+        <b> 系统快捷操作：</b>
+        <ul>
+            <li>[a]键进入全屏</li>
+            <li>[esc]键退出全屏</li>
+            <li>[空格]键切换板子</li>
+        </ul>
+    </div>
+    <div class="layer_main">
+        <b> 特别注意事项：</b>
+        <ul>
+            <li>要求板子屏幕比例为1:1</li>
+            <li>投屏电脑分辨率不低于1080P</li>
+            <li>请使用谷歌浏览器打开该系统。</li>
+            <li>切屏到该系统前，请记得打开全屏</li>
+            <li>使用前请替换"/static/image"文件夹下底图。选手PK底图4张（round_{选手场次}.png）、选手置灰底图8张（round_{选手场次}_{所属队伍left|right}}.png）</li>
+        </ul>
+    </div>
+</body>
+
+</html>
+<script src="static/js/jquery-3.3.1.min.js"></script>
+<script src="static/js/config.js"></script>
+<script src="static/js/index.js"></script>

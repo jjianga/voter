@@ -1,0 +1,92 @@
+/***************全局设置********************/
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+.layer_element{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+
+/***************底图********************/
+/* .main {
+  width: 100%;
+  height: 100%;
+  background-image: url("../image/1.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+} */
+.dt_bg {
+  z-index: 1;
+  background-image: url("../image/gb_totals.png");
+}
+
+/* .ng_score{
+  z-index: 2;
+  font-family: 'Adobe_Std_R';
+}
+.tab_score {
+  top: 32.4%;
+  left: 6.5%;
+  position: absolute;
+  transform: rotate(-45deg);
+  width: 89%;
+  height: 36%;
+  border-collapse: collapse;
+  border: 1px solid;
+}
+.tab_score tr {
+  width: 33.33%;
+  border-collapse: inherit;
+  border-spacing: 0px 0px;
+}
+.tab_score tr td {
+  font-size: 500%;
+  border-spacing: 0px 0px;
+  text-align: center;
+}
+
+.tab_score tr:nth-child(odd) {
+  height: 21%;
+}
+.tab_score tr:nth-child(even) {
+  height: 5%;
+}
+ */
+
+
+
+
+.ng_score{
+  z-index: 2;
+  overflow:hidden;
+  font-family: 'Adobe_Std_R';
+}
+.tab_score {
+  top: 32.4%;
+  left: 6.5%;
+  width: 89%;
+  height: 36%;
+  position: absolute;
+  text-align: center;
+  font-size: 5vw;
+  transform: rotate(-45deg);
+  border-collapse: collapse;
+}
+.tab_score_tr_odd {
+  height: 23%;
+  /* border: 1px solid red; */
+}
+.tab_score_tr_even{
+  height: 3%;
+}
+.tab_score td {
+  width: 33.33%;
+}

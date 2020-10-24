@@ -1,0 +1,13 @@
+/***************全局设置********************/
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.layer_main{
+  margin-top: 20px;
+  margin-left: 20px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
