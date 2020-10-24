@@ -105,13 +105,13 @@
 										观众投票：{{athleteInfo[index].audienceValue != null?athleteInfo[index].audienceValue:'--'}}
 									</div>
 								</div>
-								<div class="player-name red" :style="athlete.name==athleteInfo[index].name?'transform: scale(1.1);':''">
+								<div class="player-name red" :style="athlete.name==athleteInfo[index].name?'transform: scale(1.1);text-shadow:2px 2px 0px #999;':''">
 									{{athleteInfo[index].name}}
 								</div>
 								<div :class="'sessionNum ' + (athleteInfo[index + 1].v == 2?' winLeft':' ') +( athleteInfo[index].v == 2?' winRigth':' ')">
 									第{{number[index < 2 ? 0:parseInt(index/2)]}}场
 								</div>
-								<div class="player-name blue" :style="athlete.name==athleteInfo[index+1].name?'transform: scale(1.1);':''">
+								<div class="player-name blue" :style="athlete.name==athleteInfo[index+1].name?'transform: scale(1.1);text-shadow:2px 2px 0px #999;':''">
 									{{athleteInfo[index + 1].name}}
 								</div>
 								<div class="player-score">
